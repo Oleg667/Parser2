@@ -13,18 +13,18 @@ browser.maximize_window()
 # Открываем сайт
 browser.get("https://www.bafus.ru/200100782/") #открываем страницу Евролайф 1л база А
 
-# # Находим поле ввода текста и вводим текст
-# search_input = browser.find_element(By.ID, "a11y-search-input")
-# search_input.send_keys("Python Junior")
 
 # Найдем цену на 1л
-header_vacancies = browser.find_element(By.CSS_SELECTOR, '[span.data-orig-price.class]')
-header_name = header_vacancies.text
+header_vacancies = browser.find_elements(By.XPATH, '//span[@class="sht-price"][1]')
+header_name = header_vacancies[1].text
+#print(header_name)
 
 
-# # Находим кнопку "Найти работу"
-# search_button = browser.find_element(By.CSS_SELECTOR, 'button[data-qa="search-button"]')
-# search_button.click()
+# # Находим кнопку "3л" и нажимаем её
+search_button3 = browser.find_elements(By.PARTIAL_LINK_TEXT, 'www.bafus.ru/200100780/'[0])
+#print(search_button)
+# search_button3 = search_button[1]
+search_button3.click()
 
 # # Найдем заголовок
 # header_vacancies = browser.find_element(By.CSS_SELECTOR, '[data-qa="vacancies-search-header"]')
@@ -34,7 +34,7 @@ header_name = header_vacancies.text
 vacancies_count = header_name
 # vacancies_count = re.sub(r"\D", "", header_name)
 print(f"Цена: {vacancies_count}")
-print(header_vacancies)
+# print(header_vacancies)
 
 # Ждем
 time.sleep(2)
