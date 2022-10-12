@@ -42,8 +42,8 @@ def open_get(url_1,xpath_prise,xpath_lkm,xpath_tara,xpath_baza): #открыва
 url_1="https://www.bafus.ru/200100780/"
 xpath_prise = '/html/body/div[4]/div[1]/div[2]/div/div[1]/main/div[1]/div[2]/div[2]/aside/div/div[1]/table[1]/tbody/tr/td/span[1]'
 xpath_lkm = '/html/body/div[4]/div[1]/div[2]/div/div[1]/main/div[1]/header/div/div/div/h1'
-xpath_tara = '/html/body/div[4]/div[1]/div[2]/div/div[1]/main/div[1]/div[2]/div[1]/div/div/div/section/div/ul/li[2]/div[2]/div/div/div[1]/div/span'
-xpath_baza = '/html/body/div[4]/div[1]/div[2]/div/div[1]/main/div[1]/div[2]/div[1]/div/div/div/section/div/ul/li[1]/div[2]/div/div/div[2]/div/span'
+xpath_tara = '/html/body/div[4]/div[1]/div[2]/div/div[1]/main/div[1]/div[2]/div[1]/div/div/div/section/div/ul/li[1]/div[2]/div/div/div[2]/div/span'
+xpath_baza = '/html/body/div[4]/div[1]/div[2]/div/div[1]/main/div[1]/div[2]/div[1]/div/div/div/section/div/ul/li[2]/div[2]/div/div/div[1]/div/span'
 
 print(open_get(url_1,xpath_prise,xpath_lkm,xpath_tara,xpath_baza))
 
