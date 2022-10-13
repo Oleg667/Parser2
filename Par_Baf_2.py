@@ -1,6 +1,7 @@
 import re
 import time
 import chromedriver_binary
+import openpyxl
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -23,29 +24,47 @@ def open_get(url_1,xpath_prise,xpath_lkm,xpath_tara,xpath_baza): #открыва
 
         browser.get(url_1) #jnrhsnbt страницы по переданному адресу
 
+        err='Цена'
         price = browser.find_element(By.XPATH, xpath_prise) # получение цены
         price_n = price.text # форматирование данных цены
-
+        err = 'Имя SKU'
         name = browser.find_element(By.XPATH, xpath_lkm)  # получение наименования
         name_n = name.text  # форматирование данных наименование
-
+        err = 'Тара'
         tara = browser.find_element(By.XPATH, xpath_tara)  # получение тары
         tara_n = tara.text  # форматирование данных тары
-
+        err = 'База'
         baza = browser.find_element(By.XPATH, xpath_baza)  # получение базы
         baza_n = baza.text  # форматирование данных базы
+
         browser.close() #закрываем браузер
 
 
         return(name_n,tara_n,baza_n,price_n)
 
-url_1="https://www.bafus.ru/200100780/"
-xpath_prise = '/html/body/div[4]/div[1]/div[2]/div/div[1]/main/div[1]/div[2]/div[2]/aside/div/div[1]/table[1]/tbody/tr/td/span[1]'
-xpath_lkm = '/html/body/div[4]/div[1]/div[2]/div/div[1]/main/div[1]/header/div/div/div/h1'
-xpath_tara = '/html/body/div[4]/div[1]/div[2]/div/div[1]/main/div[1]/div[2]/div[1]/div/div/div/section/div/ul/li[1]/div[2]/div/div/div[2]/div/span'
-xpath_baza = '/html/body/div[4]/div[1]/div[2]/div/div[1]/main/div[1]/div[2]/div[1]/div/div/div/section/div/ul/li[2]/div[2]/div/div/div[1]/div/span'
+wb = openpyxl.reader.excel.load_workbook(filename="PRICE2022.xlsx", data_only=True) #открываем файл с переменными
+wb.active = 1 # делаем активной вторую страницу  там где Бафус
+sheet = wb.active # копируем страницу в переменную
 
-print(open_get(url_1,xpath_prise,xpath_lkm,xpath_tara,xpath_baza))
+
+
+# извлекаем данные для парсинга
+cod_sku = sheet['a2'].value
+url_1= sheet['b2'].value
+xpath_prise = sheet['c2'].value
+xpath_lkm = sheet['d2'].value
+xpath_tara = sheet['e2'].value
+xpath_baza = sheet['f2'].value
+
+#print(cod_sku,url_1,xpath_prise,xpath_lkm,xpath_tara,xpath_baza) #контрольная  печать переменных
+
+# url_1="https://www.bafus.ru/200100780/"
+# xpath_prise = '/html/body/div[4]/div[1]/div[2]/div/div[1]/main/div[1]/div[2]/div[2]/aside/div/div[1]/table[1]/tbody/tr/td/span[1]'
+# xpath_lkm = '/html/body/div[4]/div[1]/div[2]/div/div[1]/main/div[1]/header/div/div/div/h1'
+# xpath_tara = '/html/body/div[4]/div[1]/div[2]/div/div[1]/main/div[1]/div[2]/div[1]/div/div/div/section/div/ul/li[1]/div[2]/div/div/div[2]/div/span'
+# xpath_baza = '/html/body/div[4]/div[1]/div[2]/div/div[1]/main/div[1]/div[2]/div[1]/div/div/div/section/div/ul/li[2]/div[2]/div/div/div[1]/div/span'
+
+print(open_get(url_1,xpath_prise,xpath_lkm,xpath_tara,xpath_baza)) # получаем данные по продукту с сайта
 
 #print(yyy)
 #print(name_n, tara_n, price_n)
