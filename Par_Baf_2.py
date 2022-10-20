@@ -2,9 +2,12 @@ import re
 import time
 import chromedriver_binary
 import openpyxl
+import time
+
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.common.exceptions import NoSuchElementException
 
 
 #  Создаем браузер
@@ -20,24 +23,51 @@ browser.maximize_window()
 # - локатор наименования лкм
 # - локатор тары
 # - локатор базы
-def open_get(url_1,xpath_prise,xpath_lkm,xpath_tara,xpath_baza): #открываем страницу по адресу и вытаскивает цену
+def open_get(cod_sku,url_1,xpath_prise,xpath_lkm,xpath_tara,xpath_baza): #открываем страницу по адресу и вытаскивает цену
+
+
 
         browser.get(url_1) #jnrhsnbt страницы по переданному адресу
 
-        err='Цена'
-        price = browser.find_element(By.XPATH, xpath_prise) # получение цены
-        price_n = price.text # форматирование данных цены
-        err = 'Имя SKU'
-        name = browser.find_element(By.XPATH, xpath_lkm)  # получение наименования
-        name_n = name.text  # форматирование данных наименование
-        err = 'Тара'
-        tara = browser.find_element(By.XPATH, xpath_tara)  # получение тары
-        tara_n = tara.text  # форматирование данных тары
-        err = 'База'
-        baza = browser.find_element(By.XPATH, xpath_baza)  # получение базы
-        baza_n = baza.text  # форматирование данных базы
 
-        browser.close() #закрываем браузер
+        time.sleep(3)
+
+        err='Цена' # err - переменная показывающая какой этап парсинга выполняется, для идентификация ошибки
+        price_n=' '
+        try:
+                price = browser.find_element(By.XPATH, xpath_prise) # получение цены
+                price_n = price.text # форматирование данных цены
+        except NoSuchElementException:  # spelling error making this code not work as expected
+                print( cod_sku,"неверный XPATH для  ",err)
+                pass
+        err = 'Имя SKU'
+        name_n = ' '
+        try:
+                name = browser.find_element(By.XPATH, xpath_lkm)  # получение наименования
+                name_n = name.text  # форматирование данных наименование
+        except NoSuchElementException:  # spelling error making this code not work as expected
+                print( cod_sku,"неверный XPATH для  ",err)
+                pass
+
+        err = 'Тара'
+        tara_n = ' '
+        try:
+                tara = browser.find_element(By.XPATH, xpath_tara)  # получение тары
+                tara_n = tara.text  # форматирование данных тары
+        except NoSuchElementException:  # spelling error making this code not work as expected
+                print( cod_sku,"неверный XPATH для  ",err)
+                pass
+        err = 'База'
+        baza_n = ' '
+        try:
+                baza = browser.find_element(By.XPATH, xpath_baza)  # получение базы
+                baza_n = baza.text  # форматирование данных базы
+        except NoSuchElementException:  # spelling error making this code not work as expected
+                print( cod_sku,"неверный XPATH для  ",err)
+                pass
+        # browser.close() #закрываем браузер
+
+        time.sleep(3)
 
 
         return(name_n,tara_n,baza_n,price_n)
@@ -45,16 +75,16 @@ def open_get(url_1,xpath_prise,xpath_lkm,xpath_tara,xpath_baza): #открыва
 wb = openpyxl.reader.excel.load_workbook(filename="PRICE2022.xlsx", data_only=True) #открываем файл с переменными
 wb.active = 1 # делаем активной вторую страницу  там где Бафус
 sheet = wb.active # копируем страницу в переменную
+i=2
+while i>0:
 
-
-
-# извлекаем данные для парсинга
-cod_sku = sheet['a2'].value
-url_1= sheet['b2'].value
-xpath_prise = sheet['c2'].value
-xpath_lkm = sheet['d2'].value
-xpath_tara = sheet['e2'].value
-xpath_baza = sheet['f2'].value
+        # извлекаем данные для парсинга
+        cod_sku = sheet['a'+ str(i)].value
+        url_1= sheet['b'+ str(i)].value
+        xpath_prise = sheet['c'+ str(i)].value
+        xpath_lkm = sheet['d'+ str(i)].value
+        xpath_tara = sheet['e'+ str(i)].value
+        xpath_baza = sheet['f'+ str(i)].value
 
 #print(cod_sku,url_1,xpath_prise,xpath_lkm,xpath_tara,xpath_baza) #контрольная  печать переменных
 
@@ -63,8 +93,11 @@ xpath_baza = sheet['f2'].value
 # xpath_lkm = '/html/body/div[4]/div[1]/div[2]/div/div[1]/main/div[1]/header/div/div/div/h1'
 # xpath_tara = '/html/body/div[4]/div[1]/div[2]/div/div[1]/main/div[1]/div[2]/div[1]/div/div/div/section/div/ul/li[1]/div[2]/div/div/div[2]/div/span'
 # xpath_baza = '/html/body/div[4]/div[1]/div[2]/div/div[1]/main/div[1]/div[2]/div[1]/div/div/div/section/div/ul/li[2]/div[2]/div/div/div[1]/div/span'
-
-print(open_get(url_1,xpath_prise,xpath_lkm,xpath_tara,xpath_baza)) # получаем данные по продукту с сайта
+        if cod_sku == "stop":
+                browser.close()  # закрываем браузер
+                break
+        print(open_get(cod_sku,url_1,xpath_prise,xpath_lkm,xpath_tara,xpath_baza)) # получаем данные по продукту с сайта
+        i = i+1
 
 #print(yyy)
 #print(name_n, tara_n, price_n)
