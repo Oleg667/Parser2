@@ -9,6 +9,7 @@ import re
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import StaleElementReferenceException
 from openpyxl.utils import get_column_letter
 
 #  Создаем браузер
@@ -29,15 +30,18 @@ def open_get(cod_sku,url_1,xpath_prise,xpath_lkm,xpath_tara,xpath_baza): #отк
 
         browser.get(url_1) #открытие страницы по переданному адресу
 
-        time.sleep(0.4)
+        time.sleep(0.7)
 
         err='Цена' # err - переменная показывающая какой этап парсинга выполняется, для идентификация ошибки
         price_n=' '
         try:
                 price = browser.find_element(By.XPATH, xpath_prise) # получение цены
                 price_n = price.text # форматирование данных цены
-        except NoSuchElementException:  # spelling error making this code not work as expected
+        except NoSuchElementException:  # ошибка, из-за которой этот код работает не так, как ожидалось
                 print( cod_sku,"неверный XPATH для  ",err)
+                pass
+        except StaleElementReferenceException:  # ошибка, из-за которой этот код работает не так, как ожидалось
+                print( cod_sku,"элемент закрыт'  ",err)
                 pass
         err = 'Имя SKU'
         name_n = ' '
@@ -46,6 +50,9 @@ def open_get(cod_sku,url_1,xpath_prise,xpath_lkm,xpath_tara,xpath_baza): #отк
                 name_n = name.text  # форматирование данных наименование
         except NoSuchElementException:  # spelling error making this code not work as expected
                 print( cod_sku,"неверный XPATH для  ",err)
+                pass
+        except StaleElementReferenceException:  # ошибка, из-за которой этот код работает не так, как ожидалось
+                print( cod_sku,"элемент закрыт'  ",err)
                 pass
 
         err = 'Тара'
@@ -56,6 +63,10 @@ def open_get(cod_sku,url_1,xpath_prise,xpath_lkm,xpath_tara,xpath_baza): #отк
         except NoSuchElementException:  # spelling error making this code not work as expected
                 print( cod_sku,"неверный XPATH для  ",err)
                 pass
+        except StaleElementReferenceException:  # ошибка, из-за которой этот код работает не так, как ожидалось
+                print( cod_sku,"элемент закрыт'  ",err)
+                pass
+
         err = 'База'
         baza_n = ' '
         try:
@@ -63,6 +74,9 @@ def open_get(cod_sku,url_1,xpath_prise,xpath_lkm,xpath_tara,xpath_baza): #отк
                 baza_n = baza.text  # форматирование данных базы
         except NoSuchElementException:  # spelling error making this code not work as expected
                 print( cod_sku,"неверный XPATH для  ",err)
+                pass
+        except StaleElementReferenceException:  # ошибка, из-за которой этот код работает не так, как ожидалось
+                print( cod_sku,"элемент закрыт'  ",err)
                 pass
         # browser.close() #закрываем браузер
 
