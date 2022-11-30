@@ -1,3 +1,5 @@
+#https://metanit.com/python/tkinter/2.9.php
+
 import tkinter
 
 import pandas as pd
@@ -18,6 +20,7 @@ from selenium.common.exceptions import StaleElementReferenceException
 from openpyxl.utils import get_column_letter
 
 from tkinter import *
+from tkinter.messagebox import showinfo
 
 def list_parser():
 
@@ -46,18 +49,28 @@ root.iconphoto(False,photo)
 download_label = Label(root, text = 'Выберите что будем проверять', font=35) # текст в окне
 download_label.pack(pady = 20)
 
+def checkbutton_changed():
 
+    showinfo(title="Info",message=enabled.get())
 
 
 # создаем чекбоксы
 
-list_par=list_parser()
-prs1 = tkinter.Checkbutton(root, text=list_par[1])
-prs1.pack()
-prs2 = tkinter.Checkbutton(root, text=list_par[2])
-prs2.pack()
-prs3 = tkinter.Checkbutton(root, text=list_par[3])
-prs3.pack()
+list_par=list_parser() #обращаемся к функции для получения списка листов для парсинга
+
+enabled = StringVar()
+n=0
+
+for i in list_par:
+    if n != 0: # Пропускаем первый лист где находится контрольные цены
+        enabled_checkbutton = tkinter.Checkbutton(root, text=i, variable=enabled, offvalue="", onvalue=i, command=checkbutton_changed)
+        enabled_checkbutton.pack(padx=6, pady=6, anchor=NW)
+    n = +1
+#
+# prs2 = tkinter.Checkbutton(root, text=list_par[2])
+# prs2.pack()
+# prs3 = tkinter.Checkbutton(root, text=list_par[3])
+# prs3.pack()
 
 
 
