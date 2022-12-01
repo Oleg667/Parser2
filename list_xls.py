@@ -1,26 +1,12 @@
 #https://metanit.com/python/tkinter/2.9.php
 
 import tkinter
-
-import pandas as pd
-import json
-
 import openpyxl
-import time
-import re
 
 
-
-
-
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.common.exceptions import NoSuchElementException
-from selenium.common.exceptions import StaleElementReferenceException
-from openpyxl.utils import get_column_letter
-
+from tkinter import ttk
 from tkinter import *
-from tkinter.messagebox import showinfo
+
 
 def list_parser():# Получаем список листов из файла эксель
 
@@ -30,6 +16,14 @@ def list_parser():# Получаем список листов из файла �
     del list_par[0] # Удалеям имя первого (нулевого) листа с контрольным прайсом
 
     return (list_par)
+
+def selected(event): # Обработка выделенных строк в списке
+    selected_indices = languages_listbox.curselection() # получаем индексы выделенных элементов
+    selected_langs = ",".join([languages_listbox.get(i) for i in selected_indices])# получаем сами выделенные элементы
+    msg = f"вы выбрали: {selected_langs}"
+    selection_label["text"] = msg
+    global selected_langs1
+    selected_langs1 = ([languages_listbox.get(i) for i in selected_indices])
 
 
 
@@ -51,13 +45,14 @@ download_label.pack(pady = 20)
 # создаем список
 
 list_par=list_parser() #обращаемся к функции для получения списка листов для парсинга
-
-#languages = ["Python", "JavaScript", "C#", "Java"]
 languages_var = Variable(value=list_par)
 
-languages_listbox = Listbox(listvariable=languages_var)
+selection_label = ttk.Label()
+selection_label.pack(anchor=NW, fill=X, padx=5, pady=5)
 
-languages_listbox.pack(anchor=NW, fill=X, padx=5, pady=5)
+languages_listbox = Listbox(listvariable=languages_var, selectmode=EXTENDED) # Создаем список, selectmode=EXTENDED позволяет выделять несколько строк
+languages_listbox.pack(anchor=NW, fill=X, padx=5, pady=5)#размещаем список в окне
+languages_listbox.bind("<<ListboxSelect>>", selected) #ля обработки выбора элементов в Listbox необходимо прикрепить функцию обработки к событию <<ListboxSelect>> с помощью метода bind:
 
 
 
@@ -71,7 +66,7 @@ button.pack(side = BOTTOM, pady = 40) # расположение кнопки, �
 
 root.mainloop() # запуск визуализации окна
 
-
+print(selected_langs1)
 #
 
 # wb.active = 1 # делаем активной вторую страницу  там где Бафус
