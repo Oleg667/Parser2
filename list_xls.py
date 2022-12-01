@@ -8,6 +8,7 @@ from tkinter import ttk
 from tkinter import *
 
 
+
 def list_parser():# Получаем список листов из файла эксель
 
     wb = openpyxl.reader.excel.load_workbook(filename="PRICE2022.xlsx", data_only=True)  # открываем файл с переменными
@@ -22,7 +23,7 @@ def selected(event): # Обработка выделенных строк в с�
     selected_langs = ",".join([languages_listbox.get(i) for i in selected_indices])# получаем сами выделенные элементы
     msg = f"вы выбрали: {selected_langs}"
     selection_label["text"] = msg
-    global selected_langs1
+    global selected_langs1  # переменная хранит список выбранных магазинов (названия листов) для проверки
     selected_langs1 = ([languages_listbox.get(i) for i in selected_indices])
 
 
