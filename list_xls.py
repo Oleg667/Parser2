@@ -29,22 +29,27 @@ def selected(event): # Обработка выделенных строк в с�
 
 def Checkbutton_1(): # Обработка чекбокса о выводе в файл только цен ниже контрольных или всех
     global violation
-    if var1.get() == 1:
+    print(var1.get())
+    if int(var1.get()) == 1:
         violation = 1
+        print(violation)
     else:
         violation = 0
-    print(var1.get())
+        print(violation)
 
 def Checkbutton_2(): # Обработка чекбокса о допустимой скидке 5% при контроле цены
-    global skidka_5 # если скидки нет то рано 1 если скидка есть то 0,95 (множитель для контрольной цены)
-    if var2.get() == 1:
+    global skidka_5 # если скидки нет то равно 1 если скидка есть то 0,95 (множитель для контрольной цены)
+    print(var2.get())
+    if int(var2.get()) == 1:
         skidka_5 = 0,95
+        print(skidka_5)
     else:
         skidka_5 = 1
-
-   print(var2.get())
+        print(skidka_5)
 
 selected_langs1 = list_parser()
+skidka_5 = 1
+violation = 1
 
 root = Tk() # класс окна
 
@@ -77,18 +82,18 @@ languages_listbox.bind("<<ListboxSelect>>", selected) #ля обработки �
 
 
 # Кнопка
-button = Button(root,text=" Запустить Парсер ", font = 40, command =lambda: Parser_master(selected_langs1)) # создаем кнопку, через lambda:  иначе сразу запускается Parser_master не дожидаясь нажатия
+button = Button(root,text=" Запустить Парсер ", font = 40, command =lambda: Parser_master(selected_langs1,skidka_5,violation)) # создаем кнопку, через lambda:  иначе сразу запускается Parser_master не дожидаясь нажатия
 button.pack(side = BOTTOM, pady = 40) # расположение кнопки, отступ по оси У
 
 # Чекбоксы
 
 var1 = tkinter.StringVar() # Чекбокс о выводе в файл только цен ниже контрольных
-var1.set("ON")
+var1.set(1)
 checkbutton_active = tkinter.Checkbutton(root, text="Выводить в файл только нарушение цены", variable=var1, command=Checkbutton_1)
 checkbutton_active.pack(side = BOTTOM )
 
 var2 = tkinter.StringVar() # Чекбокс о допустимой скидке 5% при контроле цены
-var2.set("OFF")
+var2.set(0)
 checkbutton_active = tkinter.Checkbutton(root, text="Допустима скидка от контрольной цены 5%", variable=var2, command=Checkbutton_2)
 checkbutton_active.pack(side = BOTTOM )
 
