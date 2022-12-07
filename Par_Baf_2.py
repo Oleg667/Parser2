@@ -203,7 +203,7 @@ def Parser_master(selected_langs1): # Основная функция парси
 
                         Name_sku = Lkm+' '+Tara+' '+Baza
 
-                        if Sku_rrc*1.95>Price_parser: # Если цена на сайте меньше чем РРЦ-5%, то добавляем информацию о нарушении
+                        if Sku_rrc*skidka_5<Price_parser or violation == 0 : # Если цена на сайте меньше чем контрольная цена (или контрольная цена -5%), то добавляем информацию о нарушении
 
                                 # Гененрируем  новую строку
 
@@ -218,6 +218,7 @@ def Parser_master(selected_langs1): # Основная функция парси
                                 new_row_fr = pd.DataFrame(new_row)  # создаем из строки двумерную таблицу
 
                                 df = pd.concat([df, new_row_fr], ignore_index=True)  # добавляем строку в таблицу отчета
+
 
                 #        print(Lkm,Tara,Baza,'цена на сайте',Price_parser,'РРЦ равно ',Sku_rrc)
                         i = i+1 # номер строки для выборки увеличен на 1
