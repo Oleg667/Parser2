@@ -6,6 +6,7 @@ import openpyxl
 
 from tkinter import ttk
 from tkinter import *
+from Par_Baf_2 import *
 
 
 
@@ -26,7 +27,7 @@ def selected(event): # Обработка выделенных строк в с�
     global selected_langs1  # переменная хранит список выбранных магазинов (названия листов) для проверки
     selected_langs1 = ([languages_listbox.get(i) for i in selected_indices])
 
-
+selected_langs1 = list_parser()
 
 root = Tk() # класс окна
 
@@ -59,7 +60,7 @@ languages_listbox.bind("<<ListboxSelect>>", selected) #ля обработки �
 
 
 # Кнопка
-button = Button(root,text=" Запустить Парсер ", font = 40, command= list_parser) # создаем кнопку
+button = Button(root,text=" Запустить Парсер ", font = 40, command =lambda: Parser_master(selected_langs1)) # создаем кнопку, через lambda:  иначе сразу запускается Parser_master не дожидаясь нажатия
 button.pack(side = BOTTOM, pady = 40) # расположение кнопки, отступ по оси У
 
 
@@ -67,10 +68,6 @@ button.pack(side = BOTTOM, pady = 40) # расположение кнопки, �
 
 root.mainloop() # запуск визуализации окна
 
-print(selected_langs1)
-#
+#print(selected_langs1)
 
-# wb.active = 1 # делаем активной вторую страницу  там где Бафус
-# sheet_parser = wb.active # копируем страницу в переменную
-# wb.active = 0 # делаем активной первую страницу с прайсом РРЦ
-# sheet_active = wb.active
+

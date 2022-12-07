@@ -16,9 +16,9 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import StaleElementReferenceException
 from openpyxl.utils import get_column_letter
 
-#  Создаем браузер
-browser = webdriver.Chrome()
-browser.maximize_window()
+# #  Создаем браузер
+# browser = webdriver.Chrome()
+# browser.maximize_window()
 
 
 
@@ -138,71 +138,90 @@ def price_rrc(cod_sku,sheet_active): #получаем РРЦ из прайс-л
         return(RRC_SKU)
 
 
-# def data_table() # добавляет новые результаты проверки в таблицу данных
 
-wb = openpyxl.reader.excel.load_workbook(filename="PRICE2022.xlsx", data_only=True) #открываем файл с переменными
-wb.active = 1 # делаем активной вторую страницу  там где Бафус
-sheet_parser = wb.active # копируем страницу в переменную
-wb.active = 0 # делаем активной первую страницу с прайсом РРЦ
-sheet_active = wb.active
+def Parser_master(selected_langs1): # Основная функция парсинга цен
 
-# Создаем заголовок таблицы
-data={ 'Cod': ['1'],
-       'NAME SKU': ['2'],
-       'Prise in website': ['3'],
-       'recommended retail price list': ['4'],
-       'comparison': ['5'],
-       'URL': ['6']  }
-
-df = pd.DataFrame(data) #Создаем двумерную таблицу отчета
-
-# Основной цикл проверки, пока не будет прочитана команда stop в строке файла PRICE2022
-
-i=2 # начинаем просмотр данных для поиска со второй строки в файле PRICE2022
-while i>0:
-
-        # извлекаем данные для парсинга из файла PRICE2022
-
-        cod_sku = sheet_parser['a'+ str(i)].value
-        url_1= sheet_parser['b'+ str(i)].value
-        xpath_prise = sheet_parser['c'+ str(i)].value
-        xpath_lkm = sheet_parser['d'+ str(i)].value
-        xpath_tara = sheet_parser['e'+ str(i)].value
-        xpath_baza = sheet_parser['f'+ str(i)].value
-
-        # print(cod_sku,url_1,xpath_prise,xpath_lkm,xpath_tara,xpath_baza) #контрольная  печать переменных
+        #  Создаем браузер
+        global browser # переменная хранит браузер
+        browser = webdriver.Chrome()
+        browser.maximize_window()
 
 
-        if cod_sku == "stop":
-                browser.close()  # закрываем браузер
-                break
-        # print(open_get(cod_sku, url_1, xpath_prise, xpath_lkm, xpath_tara, xpath_baza))
-        parser = open_get(cod_sku,url_1,xpath_prise,xpath_lkm,xpath_tara,xpath_baza) # получаем данные по продукту с сайта
-        #Price_parser = int(parser[3].replace(" ",""))
-        Price_parser =int(''.join([i for i in parser[3] if i.isdigit()])) # удаляем все символы кроме цифр, и преобразуем в число
-        Lkm = parser[0]
-        Tara = parser[1]
-        Baza = parser[2]
-        Sku_rrc = int(price_rrc(cod_sku,sheet_active))
 
-        Name_sku = Lkm+' '+Tara+' '+Baza
+        wb = openpyxl.reader.excel.load_workbook(filename="PRICE2022.xlsx", data_only=True) #открываем файл с переменными
 
-        if Sku_rrc*1.95>Price_parser: # Если цена на сайте меньше чем РРЦ-5%, то добавляем информацию о нарушении
+        wb.active = 0  # делаем активной первую страницу с прайсом РРЦ
+        sheet_active = wb.active
 
-                # Гененрируем  новую строку
+        # wb.active = 1 # делаем активной вторую страницу  там где Бафус
+        # sheet_parser = wb.active # копируем страницу в переменную
 
-                comparison = (Sku_rrc-Price_parser)/Sku_rrc*100
 
-                row = f'"Cod":["{str(cod_sku)}"], "NAME SKU": ["{Name_sku}"], "Prise in website": ["{str(Price_parser)}"], "recommended retail price list": ["{str(Sku_rrc)}"], "comparison": ["{str(comparison)}"], "URL": ["{url_1}"]'
+        # Создаем заголовок таблицы
+        data={ 'Cod': ['1'],
+               'NAME SKU': ['2'],
+               'Prise in website': ['3'],
+               'recommended retail price list': ['4'],
+               'comparison': ['5'],
+               'URL': ['6']  }
 
-                row = "{"+row+"}"
+        df = pd.DataFrame(data) #Создаем двумерную таблицу отчета
 
-                new_row = json.loads(row)  # Преобразуем строку в словарь
+        # Основной цикл проверки, открываем листы по очереди и начиная со второй строки пока не будет прочитана команда stop в первом столбце
+        print(selected_langs1)
+        for sheet_name in selected_langs1: # запускаем парсинг-проверку выбранных интернет магазинов (по названию страниц в файле эксель)
+                print(sheet_name)
+                wb.active = wb.get_sheet_by_name(sheet_name)  # делаем активной очередную страницу из выбранного списка
+                sheet_parser = wb.active  # копируем страницу в переменную
 
-                new_row_fr = pd.DataFrame(new_row)  # создаем из строки двумерную таблицу
+                i=2 # начинаем просмотр данных для поиска со второй строки в файле PRICE2022
+                while i>0:
 
-                df = pd.concat([df, new_row_fr], ignore_index=True)  # добавляем строку в таблицу отчета
+                        # извлекаем данные для парсинга из файла PRICE2022
 
-#        print(Lkm,Tara,Baza,'цена на сайте',Price_parser,'РРЦ равно ',Sku_rrc)
-        i = i+1 # номер строки для выборки увеличен на 1
-df.to_excel('./bafus.xlsx', index=False) # Записываем файл с созданными значениями
+                        cod_sku = sheet_parser['a'+ str(i)].value
+                        url_1= sheet_parser['b'+ str(i)].value
+                        xpath_prise = sheet_parser['c'+ str(i)].value
+                        xpath_lkm = sheet_parser['d'+ str(i)].value
+                        xpath_tara = sheet_parser['e'+ str(i)].value
+                        xpath_baza = sheet_parser['f'+ str(i)].value
+
+                        # print(cod_sku,url_1,xpath_prise,xpath_lkm,xpath_tara,xpath_baza) #контрольная  печать переменных
+
+
+                        if cod_sku == "stop":
+                                #browser.close()  # закрываем браузер
+                                break
+                        # print(open_get(cod_sku, url_1, xpath_prise, xpath_lkm, xpath_tara, xpath_baza))
+                        parser = open_get(cod_sku,url_1,xpath_prise,xpath_lkm,xpath_tara,xpath_baza) # получаем данные по продукту с сайта
+                        #Price_parser = int(parser[3].replace(" ",""))
+                        Price_parser =int(''.join([i for i in parser[3] if i.isdigit()])) # удаляем все символы кроме цифр, и преобразуем в число
+                        Lkm = parser[0]
+                        Tara = parser[1]
+                        Baza = parser[2]
+                        Sku_rrc = int(price_rrc(cod_sku,sheet_active))
+
+                        Name_sku = Lkm+' '+Tara+' '+Baza
+
+                        if Sku_rrc*1.95>Price_parser: # Если цена на сайте меньше чем РРЦ-5%, то добавляем информацию о нарушении
+
+                                # Гененрируем  новую строку
+
+                                comparison = (Sku_rrc-Price_parser)/Sku_rrc*100
+
+                                row = f'"Cod":["{str(cod_sku)}"], "NAME SKU": ["{Name_sku}"], "Prise in website": ["{str(Price_parser)}"], "recommended retail price list": ["{str(Sku_rrc)}"], "comparison": ["{str(comparison)}"], "URL": ["{url_1}"]'
+
+                                row = "{"+row+"}"
+
+                                new_row = json.loads(row)  # Преобразуем строку в словарь
+
+                                new_row_fr = pd.DataFrame(new_row)  # создаем из строки двумерную таблицу
+
+                                df = pd.concat([df, new_row_fr], ignore_index=True)  # добавляем строку в таблицу отчета
+
+                #        print(Lkm,Tara,Baza,'цена на сайте',Price_parser,'РРЦ равно ',Sku_rrc)
+                        i = i+1 # номер строки для выборки увеличен на 1
+        df.to_excel('./bafus.xlsx', index=False) # Записываем файл с созданными значениями
+        browser.close()  # закрываем браузер
+
+
