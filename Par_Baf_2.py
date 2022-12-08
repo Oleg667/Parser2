@@ -1,4 +1,4 @@
-import time
+import datetime
 import chromedriver_binary
 
 import pandas as pd
@@ -14,7 +14,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import StaleElementReferenceException
-from openpyxl.utils import get_column_letter
+from openpyxl.utils import get_column_letter # Функция get_column_letter() преобразовывает индекс столбца idx в букву столбца (3 => C)
 
 # #  Создаем браузер
 # browser = webdriver.Chrome()
@@ -175,6 +175,9 @@ def Parser_master(selected_langs1,skidka_5,violation): # Основная фун
                 sheet_parser = wb.active  # копируем страницу в переменную
 
                 i=2 # начинаем просмотр данных для поиска со второй строки в файле PRICE2022
+                df = pd.DataFrame(
+                        {'Cod': [1], 'NAME SKU': [2], 'Prise in website': [3], 'recommended retail price list': [4],
+                         'comparison': [5], 'URL': [5]})  # Создаем заголовки столбцов в файле отчета
                 while i>0:
 
                         # извлекаем данные для парсинга из файла PRICE2022
@@ -186,15 +189,13 @@ def Parser_master(selected_langs1,skidka_5,violation): # Основная фун
                         xpath_tara = sheet_parser['e'+ str(i)].value
                         xpath_baza = sheet_parser['f'+ str(i)].value
 
-                        # print(cod_sku,url_1,xpath_prise,xpath_lkm,xpath_tara,xpath_baza) #контрольная  печать переменных
-
-
                         if cod_sku == "stop":
                                 #browser.close()  # закрываем браузер
                                 break
-                        # print(open_get(cod_sku, url_1, xpath_prise, xpath_lkm, xpath_tara, xpath_baza))
+
                         parser = open_get(cod_sku,url_1,xpath_prise,xpath_lkm,xpath_tara,xpath_baza) # получаем данные по продукту с сайта
-                        #Price_parser = int(parser[3].replace(" ",""))
+
+
                         Price_parser =int(''.join([i for i in parser[3] if i.isdigit()])) # удаляем все символы кроме цифр, и преобразуем в число
                         Lkm = parser[0]
                         Tara = parser[1]
@@ -208,22 +209,23 @@ def Parser_master(selected_langs1,skidka_5,violation): # Основная фун
 
                                 # Гененрируем  новую строку
 
-                                comparison = (Sku_rrc-Price_parser)/Sku_rrc*100
-
-                                row = f'"Cod":["{str(cod_sku)}"], "NAME SKU": ["{Name_sku}"], "Prise in website": ["{str(Price_parser)}"], "recommended retail price list": ["{str(Sku_rrc)}"], "comparison": ["{str(comparison)}"], "URL": ["{url_1}"]'
-
-                                row = "{"+row+"}"
-
-                                new_row = json.loads(row)  # Преобразуем строку в словарь
-
-                                new_row_fr = pd.DataFrame(new_row)  # создаем из строки двумерную таблицу
-
-                                df = pd.concat([df, new_row_fr], ignore_index=True)  # добавляем строку в таблицу отчета
+                                comparison = (Sku_rrc-Price_parser)/Sku_rrc*100 # % отличия цены на сайте от контрольной цены
 
 
-                #        print(Lkm,Tara,Baza,'цена на сайте',Price_parser,'РРЦ равно ',Sku_rrc)
+                                new_row = {'Cod': cod_sku, 'NAME SKU': Name_sku, 'Prise in website': Price_parser,
+                                         'recommended retail price list': Sku_rrc, 'comparison': comparison,
+                                         'URL': url_1}
+
+                                df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True) # добавляем строку в таблицу отчета
+
+
+
                         i = i+1 # номер строки для выборки увеличен на 1
-        df.to_excel('./bafus.xlsx', index=False) # Записываем файл с созданными значениями
+
+        now = datetime.datetime.now()
+        report ="./"+str(now.year) + str(now.month) + str(now.day) + str(now.hour) + str(now.minute) + str(now.second) + ".xlsx"
+        #df.to_excel(report, index=False)  # Записываем файл с созданными значениями и привязкой к дате и времени
+        df.to_excel('./report.xlsx', index=False) # Записываем файл с созданными значениями
         browser.close()  # закрываем браузер
 
 
