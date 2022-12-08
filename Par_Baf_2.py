@@ -94,20 +94,15 @@ def price_rrc(cod_sku,sheet_active): #получаем РРЦ из прайс-л
 
         path_to_file = 'PRICE2022.xlsx'
 
-        # search_text = input(str('Какой текст ищем: '))
-        # search_text = search_text.lower()
         search_text = cod_sku
-        # print('Ищем:', search_text)
 
         wb = openpyxl.load_workbook(path_to_file)  # Грузим наш прайс-лист
 
         sheets_list = wb.sheetnames  # Получаем список всех листов в файле
-        #sheet_active = wb[sheets_list[0]]  # Начинаем работать с самым первым
-        row_max = sheet_active.max_row  # Получаем количество столбцов
-        # print(type(row_max))
-        column_max = sheet_active.max_column  # Получаем количество строк
 
-        # print('В файле:', path_to_file, '\n Строк:', row_max, '\n Столбцов:', column_max)
+        row_max = sheet_active.max_row  # Получаем количество столбцов
+
+        column_max = sheet_active.max_column  # Получаем количество строк
 
         row_min = 1  # Переменная, отвечающая за номер строки
         column_min = 1  # Переменная, отвечающая за номер столбца
@@ -128,10 +123,10 @@ def price_rrc(cod_sku,sheet_active): #получаем РРЦ из прайс-л
                         regular = search_text
                         result = re.findall(regular, data_from_cell)
                         if len(result) > 0:
-                                # print('Нашли в ячейке:', word_cell)
+
                                 RRC = 'C' + row_min_min
                                 RRC_SKU = sheet_active[RRC].value # переменная хранит найденное РРЦ
-                                # print('РРЦ равняется ', RRC_SKU, ' рубль')
+
                         row_min_min = int(row_min_min)
                         row_min_min = row_min_min + 1
                 column_min = column_min + 1
@@ -152,10 +147,6 @@ def Parser_master(selected_langs1,skidka_5,violation): # Основная фун
 
         wb.active = 0  # делаем активной первую страницу с прайсом РРЦ
         sheet_active = wb.active
-
-        # wb.active = 1 # делаем активной вторую страницу  там где Бафус
-        # sheet_parser = wb.active # копируем страницу в переменную
-
 
         # Создаем заголовок таблицы
         data={ 'Cod': ['1'],
@@ -189,8 +180,8 @@ def Parser_master(selected_langs1,skidka_5,violation): # Основная фун
                         xpath_tara = sheet_parser['e'+ str(i)].value
                         xpath_baza = sheet_parser['f'+ str(i)].value
 
-                        if cod_sku == "stop":
-                                #browser.close()  # закрываем браузер
+                        if cod_sku == "stop": # если прочитали в первом столбце 'stop' то переходим к следующему листу или заканчиваем проверку если это был последний лист
+
                                 break
 
                         parser = open_get(cod_sku,url_1,xpath_prise,xpath_lkm,xpath_tara,xpath_baza) # получаем данные по продукту с сайта
