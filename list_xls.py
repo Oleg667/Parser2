@@ -41,7 +41,7 @@ def Checkbutton_2(): # Обработка чекбокса о допустимо
     global skidka_5 # если скидки нет то равно 1 если скидка есть то 0,95 (множитель для контрольной цены)
     print(var2.get())
     if int(var2.get()) == 1:
-        skidka_5 = 0,95
+        skidka_5 = 0.95
         print(skidka_5)
     else:
         skidka_5 = 1

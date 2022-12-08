@@ -202,8 +202,9 @@ def Parser_master(selected_langs1,skidka_5,violation): # Основная фун
                         Sku_rrc = int(price_rrc(cod_sku,sheet_active))
 
                         Name_sku = Lkm+' '+Tara+' '+Baza
+                        print(Sku_rrc,skidka_5,Price_parser)
 
-                        if Sku_rrc*skidka_5<Price_parser or violation == 0: # Если цена на сайте меньше чем контрольная цена (или контрольная цена -5%), то добавляем информацию о нарушении
+                        if Sku_rrc*skidka_5 > Price_parser or violation == 0: # Если цена на сайте меньше чем контрольная цена (или контрольная цена -5%), то добавляем информацию о нарушении
 
                                 # Гененрируем  новую строку
 
