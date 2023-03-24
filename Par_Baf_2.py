@@ -62,9 +62,9 @@ def open_get(cod_sku,url_1,xpath_prise,xpath_lkm,xpath_tara,xpath_baza): #отк
         err = 'Тара'
         tara_n = ' '
         try:
-                tara = browser.find_element(By.XPATH, xpath_tara)  # получение тары
-                tara_n = tara.text  # форматирование данных тары
-        except NoSuchElementException:  # spelling error making this code not work as expected
+                tara = browser.find_element(By.XPATH, xpath_tara)       # получение тары
+                tara_n = tara.text                                      # форматирование данных тары
+        except NoSuchElementException:                                  # spelling error making this code not work as expected
                 print( cod_sku,"неверный XPATH для  ",err)
                 pass
         except StaleElementReferenceException:  # ошибка, из-за которой этот код работает не так, как ожидалось
