@@ -148,27 +148,30 @@ def Parser_master(selected_langs1,skidka_5,violation): # Основная фун
         wb.active = 0  # делаем активной первую страницу с прайсом РРЦ
         sheet_active = wb.active
 
-        # Создаем заголовок таблицы
-        data={ 'Cod': ['1'],
-               'NAME SKU': ['2'],
-               'Prise in website': ['3'],
-               'recommended retail price list': ['4'],
-               'comparison': ['5'],
-               'URL': ['6']  }
+        # Создаем заголовок таблицы ... не актуально.
+        # data={ 'Cod': ['1'],
+        #        'NAME SKU': ['2'],
+        #        'Prise in website': ['3'],
+        #        'recommended retail price list': ['4'],
+        #        'comparison': ['5'],
+        #        'URL': ['6']  }
 
-        df = pd.DataFrame(data) #Создаем двумерную таблицу отчета
+        # df = pd.DataFrame(data) #Создаем двумерную таблицу отчета
 
         # Основной цикл проверки, открываем листы по очереди и начиная со второй строки пока не будет прочитана команда stop в первом столбце
         print(selected_langs1)
+
+        df = pd.DataFrame(
+                {'Cod': [1], 'NAME SKU': [2], 'Prise in website': [3], 'recommended retail price list': [4],
+                 'comparison': [5], 'URL': [5]})  # Создаем заголовки столбцов в файле отчета
+
         for sheet_name in selected_langs1: # запускаем парсинг-проверку выбранных интернет магазинов (по названию страниц в файле эксель)
                 print(sheet_name,skidka_5,violation)
                 wb.active = wb.get_sheet_by_name(sheet_name)  # делаем активной очередную страницу из выбранного списка
                 sheet_parser = wb.active  # копируем страницу в переменную
 
                 i=2 # начинаем просмотр данных для поиска со второй строки в файле PRICE2022
-                df = pd.DataFrame(
-                        {'Cod': [1], 'NAME SKU': [2], 'Prise in website': [3], 'recommended retail price list': [4],
-                         'comparison': [5], 'URL': [5]})  # Создаем заголовки столбцов в файле отчета
+
                 while i>0:
 
                         # извлекаем данные для парсинга из файла PRICE2022
